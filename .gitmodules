@@ -1,3 +1,6 @@
 [submodule "LaTeX"]
 	path = LaTeX
 	url = https://github.com/AlxndrKlbk/LaTeX
+[submodule "PhD_scriptorium"]
+	path = PhD_scriptorium
+	url = https://github.com/AlxndrKlbk/PhD_scriptorium
