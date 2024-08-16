@@ -4,6 +4,3 @@
 [submodule "PhD_scriptorium"]
 	path = PhD_scriptorium
 	url = https://github.com/AlxndrKlbk/PhD_scriptorium
-[submodule "real-object-modelling"]
-	path = real-object-modelling
-	url = https://github.com/AlxndrKlbk/real-object-modelling.git
