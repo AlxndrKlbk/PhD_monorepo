@@ -1,0 +1,8 @@
+# default name for python venv with conan
+venv
+
+# user's cmake and build dir
+CMakeUserPresets.json
+CMakeLists.txt.user
+build
+
