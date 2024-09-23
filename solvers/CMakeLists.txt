@@ -15,10 +15,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PREFIX_PATH "/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/" ${CMAKE_PREFIX_PATH})
 # set(CMAKE_INCLUDE_PATH "/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include")
 # include_directories("/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include")
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(Boost REQUIRED)
-find_package(Quadmath REQUIRED)
+# find_package(Quadmath REQUIRED)
 
 add_compile_options(
     -Werror
