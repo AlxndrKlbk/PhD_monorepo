@@ -1,10 +1,12 @@
+#include <boost/multiprecision/float128.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <iostream>
 
 
 namespace bmp = boost::multiprecision;
-using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
+// using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
+using boost_float = bmp::float128;
 
 int main(int argc, char ** argv)
 {

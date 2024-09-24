@@ -1,5 +1,5 @@
 
-project(heat_explicit_solver CXX)
+project(heat_explicit_solver LANGUAGES CXX)
 
 set(TARGET implicit_heat_radial)
 

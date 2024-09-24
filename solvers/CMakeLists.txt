@@ -9,13 +9,20 @@ set(PHD_PROJECT_PATCH 0)
 project(phd_project VERSION ${PHD_PROJECT_MAJOR}.${PHD_PROJECT_MINOR}.${PHD_PROJECT_PATCH}.0
         LANGUAGES CXX)
 
+# compiler options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)            # force use GNU standart extension
 
-set(CMAKE_PREFIX_PATH "/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/" ${CMAKE_PREFIX_PATH})
-# set(CMAKE_INCLUDE_PATH "/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include")
-# include_directories("/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include")
-# set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+message(STATUS "CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS}")
+
+# generator options
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)       # force cmake create JSON output with generated compile commands with flags
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)     # force -fPIC compile option
+
 
 find_package(Boost REQUIRED)
 # find_package(Quadmath REQUIRED)
@@ -38,9 +45,5 @@ add_compile_options(
     -Wsign-conversion
     -Wsign-promo
 )
-
-if(NOT CMAKE_CXX_EXTENSIONS)
-    set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
 
 add_subdirectory(solvers/)
