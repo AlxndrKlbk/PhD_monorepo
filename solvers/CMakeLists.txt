@@ -19,9 +19,16 @@ message(STATUS "CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS}")
 # generator options
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)       # force cmake create JSON output with generated compile commands with flags
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)     # force -fPIC compile option
+
+include(ProcessorCount)
+ProcessorCount(NUM_CORES)
+if(NOT NUM_CORES EQUAL 0)
+  math(EXPR MAX_JOBS "(${NUM_CORES} / 2)")
+  set(CMAKE_JOB_COUNT MAX_JOBS CACHE STRING "Number of jobs to run in parallel")
+  message(STATUS "cores count: ${NUM_CORES}. \n-- maximud jobs: ${MAX_JOBS}")
+endif()
 
 
 find_package(Boost REQUIRED)
@@ -44,6 +51,10 @@ add_compile_options(
     -Wredundant-decls
     -Wsign-conversion
     -Wsign-promo
+    -fext-numeric-literals
 )
+
+add_link_options(
+    -lquadmath)
 
 add_subdirectory(solvers/)

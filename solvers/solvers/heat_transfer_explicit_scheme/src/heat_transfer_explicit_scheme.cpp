@@ -5,8 +5,7 @@
 
 
 namespace bmp = boost::multiprecision;
-// using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
-using boost_float = bmp::float128;
+using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
 
 int main(int argc, char ** argv)
 {
@@ -15,6 +14,9 @@ int main(int argc, char ** argv)
     std::cout << argc << argv << std::endl;
     std::cout << f1 + f2 << std::endl;
     std::cout << boost::math::tgamma(f1) << std::endl;
+    std::cout << sizeof(double) << std::endl;
+    std::cout << sizeof(bmp::float128) << std::endl;
+    std::cout << sizeof(boost_float) << std::endl;
     //call module in function.hpp
     return 0;
 }
