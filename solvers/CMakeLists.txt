@@ -14,6 +14,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)            # force use GNU standart extension
 message(STATUS "CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS}")
+message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  message(FATAL_ERROR "Project requre GNU compiler")
+endif()
 
 # generator options
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -48,6 +54,5 @@ add_compile_options(
 ### enabling libquadmath
 add_link_options(
     -lquadmath)
-
 
 add_subdirectory(solvers/)

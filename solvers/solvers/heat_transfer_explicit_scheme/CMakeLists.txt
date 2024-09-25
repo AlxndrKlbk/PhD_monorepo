@@ -14,16 +14,8 @@ add_executable(${TARGET}
         ${SOURCES})
 
 target_link_libraries(${TARGET}
-    # PUBLIC
-    #     Quadmath::quadmath
     PRIVATE
         Boost::headers
         Boost::boost
     )
 
-
-# get_target_property(VAR Quadmath::quadmath INTERFACE_INCLUDE_DIRECTORIES)
-# message(${VAR})
-# set_target_properties(Quadmath::quadmath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Quadmath_INCLUDE_DIR}"
-#     IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-#     IMPORTED_LOCATION "${Quadmath_LIBRARY}")
