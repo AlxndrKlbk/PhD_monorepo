@@ -13,7 +13,6 @@ project(phd_project VERSION ${PHD_PROJECT_MAJOR}.${PHD_PROJECT_MINOR}.${PHD_PROJ
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)            # force use GNU standart extension
-
 message(STATUS "CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS}")
 
 # generator options
@@ -22,20 +21,11 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)       # force cmake create JSON output with generated compile commands with flags
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)     # force -fPIC compile option
 
-include(ProcessorCount)
-ProcessorCount(NUM_CORES)
-if(NOT NUM_CORES EQUAL 0)
-  math(EXPR MAX_JOBS "(${NUM_CORES} / 2)")
-  set(CMAKE_JOB_COUNT MAX_JOBS CACHE STRING "Number of jobs to run in parallel")
-  message(STATUS "cores count: ${NUM_CORES}. \n-- maximud jobs: ${MAX_JOBS}")
-endif()
-
-
 find_package(Boost REQUIRED)
 # find_package(Quadmath REQUIRED)
 
 add_compile_options(
-    -Werror
+    # -Werror
     -Wall
     -Wextra
     -Wpedantic
@@ -54,6 +44,7 @@ add_compile_options(
     -fext-numeric-literals
 )
 
+### enabling libquadmath
 add_link_options(
     -lquadmath)
 
