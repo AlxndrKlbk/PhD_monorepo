@@ -25,7 +25,8 @@ find_package(Boost REQUIRED)
 # find_package(Quadmath REQUIRED)
 
 add_compile_options(
-    # -Werror
+    -Werror
+    -Wno-error=array-bounds
     -Wall
     -Wextra
     -Wpedantic
@@ -47,5 +48,6 @@ add_compile_options(
 ### enabling libquadmath
 add_link_options(
     -lquadmath)
+
 
 add_subdirectory(solvers/)
