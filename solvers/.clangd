@@ -1,4 +1,6 @@
 CompileFlags:
   Add: -I/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include
-# Suppress: 'builtin_definition'
-# Add: [--query-driver=usr/bin/gcc,usr/bin/g++]
+
+Diagnostics:
+  Suppress: builtin_definition
+
