@@ -5,6 +5,7 @@
 #include <boost/math/special_functions/gamma.hpp>
 
 #include <iostream>
+#include <format>
 #include <array>
 
 // типы повышенной точности
@@ -15,20 +16,19 @@ using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
 // ToDo: нормально считать температуропроводность
 const boost_float a = 1;               // коэффициент температуропроводности a = теплопроводность / (теплоемкость * плотность)
 const boost_float L = 100;             // длина моделируемой области (м)
-constexpr size_t x_steps = 100;      // количество точек по пространству
+constexpr size_t x_steps = 200;      // количество точек по пространству
 constexpr ulong t = 3600;            // период времени для моделирования (секунд)
 constexpr ulong tau_steps = 100;      // количество временных шагов
 
 // граничные условия
-// r {0;1}
 boost_float U_r_tau0 = 20;              // U(r, 0) начальное распределние температуры (C) в области
 boost_float U_r0_tau = 400;             // U(0, tau) - функция(const) температура на левой границе
 boost_float U_r_tau = U_r_tau0;          // U(1, tau) - функция(const) температура на правой границе
 
 // таким образом
-constexpr ulong tau = t / tau_steps;                                            // шаг по времени в секундах
-const boost_float h = 1.0 / tau_steps;                                          // h параметр (приращение по безразмерной координате)
-const boost_float dtau = t / tau_steps * (bmp::pow(a, 2) / bmp::pow(L, 2));     // dtau (приращение по безразмерному времени)
+const boost_float tau = static_cast<boost_float>(t) / bmp::pow(L, 2) * bmp::pow(a, 2);  // шаг по времени в секундах
+const boost_float h = 1.0 / x_steps;                                                  // h параметр (приращение по безразмерной координате)
+const boost_float dtau = t / tau_steps * (bmp::pow(a, 2) / bmp::pow(L, 2));             // dtau (приращение по безразмерному времени)
 
 using calculation_net = std::array<std::array<boost_float, tau_steps>, x_steps>;
 
@@ -57,6 +57,11 @@ int solve()
     auto h_square = bmp::pow(h, 2);
     auto&& h_square_str = h_square.str();
     auto&& dtau_str = dtau.str();
+
+
+    // критерий схемы на устойчивость?
+    // std::cout << std::format("{} <= {})", tau.str(), (h_square / (2 * bmp::pow(a, 2))).str()) << std::endl;
+    // assert(tau <= (h_square / (2 * bmp::pow(a, 2))));
 
     for (ulong tau = 0; tau < tau_steps; tau++) {
         for (ulong i = 1; i < x_steps - 1; i++) {
