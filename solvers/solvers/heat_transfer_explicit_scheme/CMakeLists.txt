@@ -19,3 +19,7 @@ target_link_libraries(${TARGET}
         Boost::boost
     )
 
+target_include_directories(${TARGET}
+    PUBLIC
+        ${INCLUDE_PATH}
+)
