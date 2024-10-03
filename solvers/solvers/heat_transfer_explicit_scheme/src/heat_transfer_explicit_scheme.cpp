@@ -14,16 +14,16 @@ using boost_float = bmp::number<bmp::cpp_bin_float<200>>;
 
 // параметры моделируемой области
 // ToDo: нормально считать температуропроводность
-const boost_float a = 1;               // коэффициент температуропроводности a = теплопроводность / (теплоемкость * плотность)
-const boost_float L = 100;             // длина моделируемой области (м)
-constexpr size_t x_steps = 200;      // количество точек по пространству
-constexpr ulong t = 3600;            // период времени для моделирования (секунд)
-constexpr ulong tau_steps = 100;      // количество временных шагов
+const boost_float a = 1;              // коэффициент температуропроводности a = теплопроводность / (теплоемкость * плотность)
+const boost_float L = 20;             // длина моделируемой области (м)
+constexpr size_t x_steps = 20;        // количество точек по пространству
+const boost_float t = 100;            // период времени для моделирования (секунд)
+constexpr ulong tau_steps = 1000;     // количество временных шагов
 
 // граничные условия
 boost_float U_r_tau0 = 20;              // U(r, 0) начальное распределние температуры (C) в области
 boost_float U_r0_tau = 400;             // U(0, tau) - функция(const) температура на левой границе
-boost_float U_r_tau = U_r_tau0;          // U(1, tau) - функция(const) температура на правой границе
+boost_float U_r_tau = U_r_tau0;         // U(1, tau) - функция(const) температура на правой границе
 
 // таким образом
 const boost_float tau = static_cast<boost_float>(t) / bmp::pow(L, 2) * bmp::pow(a, 2);  // шаг по времени в секундах
@@ -59,7 +59,7 @@ int solve()
     auto&& dtau_str = dtau.str();
 
 
-    // критерий схемы на устойчивость?
+    // критерий схемы на устойчивость
     // std::cout << std::format("{} <= {})", tau.str(), (h_square / (2 * bmp::pow(a, 2))).str()) << std::endl;
     // assert(tau <= (h_square / (2 * bmp::pow(a, 2))));
 
@@ -82,8 +82,11 @@ int solve()
     // stop явная схема
 
     // тут можно вывести произвольную точку в произвольный момент времени и сравнить с аналитическими решениями?
-    for (ulong tau = 0; tau < tau_steps; tau++) {
-        std::cout << "step " << tau << ": " << u[1][tau] << std::endl;
+    // for (ulong tau = 0; tau < tau_steps; tau++) {
+    for (ulong tau = 0; tau < 10; tau++) {
+        std::cout << "step " << tau << ", x=1:" << u[1][tau] << std::endl;
+        std::cout << "step " << tau << ", x=2:" << u[2][tau] << std::endl;
+        std::cout << "----" << std::endl;
     }
 
     return 0;
