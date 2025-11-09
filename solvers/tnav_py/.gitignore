@@ -2,3 +2,4 @@ INIT_Thermal
 INIT_Thermal.zip
 .idea
 venv
+__pycache__

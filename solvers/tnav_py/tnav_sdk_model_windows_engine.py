@@ -1,33 +1,31 @@
-# Минимальный рабочий пример для tNavigator_python_API 1.0.0 (23.4)
-from __future__ import annotations
-import os
+import tNavigator_python_API as tNav
 from pathlib import Path
-from tNavigator_python_API import Connection
-
-TNAV_EXE = Path(r"D:\tNavigator\install\23.4\tNavigator.exe")
-CASE_PATH = Path(r"D:\usr\repo\PhD_monorepo\solvers\tnav_py\INIT_Thermal\INIT_Thermal.data")
+from const import (
+    TNAV_EXE,
+    CASE_PATH
+)
 
 def require_file(p: Path, desc: str):
     if not p.exists():
         raise FileNotFoundError(f"{desc} не найден: {p}")
 
 def main():
-    require_file(TNAV_EXE, "Бинарь tNavigator.exe")
+    require_file(TNAV_EXE, "Бинарь tNavigator-con")
     require_file(CASE_PATH, "Файл модели/проекта")
 
-    con = Connection(str(TNAV_EXE))
-    proj = con.open_project(str(CASE_PATH), project_type="md")
+    conn = tNav.Connection(str(TNAV_EXE))
+    proj = conn.open_project(str(CASE_PATH), project_type=tNav.ProjectType.MD)
 
     # интроспекцию среды внутреннего Python в tNavigator
     introspect_code = r"""
 import sys, builtins
 
 print("PY:", sys.version)
-# Посмотрим, какие глобальные имена видны из окружения tNavigator:
+# check global names from tnav env
 names = sorted([k for k in globals().keys() if not k.startswith("_")])
 print("GLOBALS:", names)
 
-# Аккуратно попробуем вывести dir() по некоторым кандидатам, если они есть:
+# print dirs
 candidates = ["model", "grid", "project", "case", "sim", "session", "api"]
 for name in candidates:
     if name in globals():

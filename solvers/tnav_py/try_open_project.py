@@ -1,11 +1,10 @@
 # tnav_probe_subprojects.py
-from __future__ import annotations
 import time
-from pathlib import Path
 from tNavigator_python_API import Connection
-
-TNAV_EXE = Path(r"D:\tNavigator\install\23.4\tNavigator.exe")
-CASE_PATH_INPUT = Path(r"D:\usr\repo\PhD_monorepo\solvers\tnav_py\INIT_Thermal\INIT_Thermal.data")
+from const import (
+    CASE_PATH,
+    TNAV_EXE
+)
 
 def wait_runs(proj, timeout_sec=60, note="root"):
     code = 'print("probe:", 1+1)'
@@ -22,11 +21,11 @@ def wait_runs(proj, timeout_sec=60, note="root"):
 def main():
     if not TNAV_EXE.exists():
         raise FileNotFoundError(f"tNavigator.exe not found: {TNAV_EXE}")
-    if not CASE_PATH_INPUT.exists():
-        raise FileNotFoundError(f"model not found: {CASE_PATH_INPUT}")
+    if not CASE_PATH.exists():
+        raise FileNotFoundError(f"model not found: {CASE_PATH}")
 
     con = Connection(str(TNAV_EXE))
-    proj = con.open_project(str(CASE_PATH_INPUT), project_type="md")
+    proj = con.open_project(str(CASE_PATH), project_type="md")
 
     print("\n== Subproject list from SDK tnav ==")
     try:
