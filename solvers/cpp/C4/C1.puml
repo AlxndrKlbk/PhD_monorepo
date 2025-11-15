@@ -1,0 +1,50 @@
+@startuml C1_Context_HydrateSimulator
+!theme plain
+top to bottom direction
+skinparam dpi 160
+skinparam linetype ortho
+skinparam shadowing false
+skinparam ArrowThickness 1.2
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #444
+  BackgroundColor #f0f0f0
+}
+
+rectangle "Пользователь\n(гидродинамик)" as User
+
+rectangle "C++ Hydrate Simulator" as Sim
+rectangle "Коммерческий симулятор\n(ECLIPSE / tNavigator)" as Comm
+
+node "Файлы модели\n(.DATA, .GRDECL,\n.GRID, .INIT,\nJSON/YAML)" as ModelFS
+node "Файлы результатов\n(VTK, HDF5,\nлоги, restart)" as ResultFS
+
+rectangle "Постобработка\n(Python / Jupyter / ParaView)" as Post
+
+' Горизонтальная раскладка
+User -[hidden]-> Sim
+Sim -[hidden]-> Comm
+Comm -[hidden]-> ModelFS
+ModelFS -[hidden]-> ResultFS
+ResultFS -[hidden]-> Post
+
+' Связи
+User --> ModelFS : редактирует\nвходные данные
+User --> Sim : запускает\nрасчёт
+User --> Comm : запускает\nрасчёт
+
+Sim --> ModelFS : читает deck-и
+Comm --> ModelFS : читает deck-и
+
+Sim --> ResultFS : пишет результаты
+Comm --> ResultFS : пишет свои результаты
+
+ResultFS --> Post : анализ и сравнение
+
+note right of Sim
+Linux (single node)
+GPU: OpenCL / CUDA
+Hydrate model:
+IHydrateFormationModel
+end note
+@enduml

@@ -1,0 +1,91 @@
+@startuml C2_Containers_CPP_HydrateInterface_GPU_OpenCL
+!theme plain
+left to right direction
+skinparam dpi 160
+skinparam linetype ortho
+skinparam shadowing false
+skinparam ArrowThickness 1.2
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #444
+  BackgroundColor #f9f9f9
+}
+skinparam componentStyle rectangle
+
+package "C++ Hydrate Simulator" as App {
+  component "DeckLoader\n(инициализация модели из файлов:\n• .DATA — ECLIPSE deck\n• .GRDECL — grid descriptor\n• .GRID / .INIT — бинарные сетки\n• .JSON / .YAML — пользовательские схемы\n• .HDF5 — сохранённые поля)" as Deck
+
+  component "GridBuilder\n(структур./неструктур. сетка)" as Grid
+
+  component "Discretization\n(FV — Finite Volume,\nFE — Finite Element; (CPU or GPU))" as Disc
+
+  component "Physics\n(неразрывность + теплопроводность, (CPU or GPU))" as Phys
+
+  component "HydrateModule\n(φ_eff, k_eff, S_h;)" as Hydr
+
+  component "NonlinearSolver\n(Ньютон / Пикар)" as NLS
+
+  component "LinearSolver\n(Krylov / AMG,\nCPU + GPU backend)" as LLS
+
+  component "TimeIntegrator\n(BDF1 — Backward Euler)" as Time
+
+  component "State\n(fields: φ, k, p, T, S_h;\nCPU-memory + GPU buffers)" as State
+
+  component "IO System\n(VTK/HDF5 экспорт, restart)" as IO
+
+  component "Config & CLI\n(YAML/JSON, CLI11)" as Cfg
+
+  component "Logging\n(spdlog / Boost.Log)" as Log
+}
+
+package "Hydrate Models" as HFI {
+  interface "IHydrateFormationModel\n(интерфейс образования гидрата)" as IHydr
+  component "SimpleLangmuirModel\n(сорбционная модель)" as Langmuir
+  component "AdvancedKineticModel\n(диффузия, фазовый баланс, Леонтьева)" as Adv
+}
+
+package "External Libraries (Linux, single node)" as Libs {
+  component "OPM Parser\n(разбор ECLIPSE deck)" as OPM
+
+  component "Eigen / BLAS / LAPACK\n(линейная алгебра на CPU)" as LA
+
+  component "GPU Backend\n(OpenCL / CUDA / clBLAS / clSPARSE\nили cuBLAS / cuSPARSE / Thrust)" as GPU
+
+  component "VTK / HDF5\n(форматы вывода)" as IOLib
+
+  component "YAML-CPP / CLI11\n(конфигурация и CLI)" as CfgLib
+
+  component "spdlog / Boost.Log / fmt\n(логирование и форматирование)" as LogLib
+}
+
+Deck --> Grid
+Grid --> Disc
+Disc --> Phys
+Phys --> Hydr
+Hydr --> IHydr
+IHydr <|-- Langmuir
+IHydr <|-- Adv
+
+Phys --> NLS
+NLS --> LLS
+Time --> NLS
+
+Phys --> State
+Hydr --> State
+IO --> State
+
+NLS --> State : update(x^{k+1})
+Time --> State : commit(t+Δt)
+
+Deck ..> OPM : парсинг deck-файлов
+
+LLS ..> LA
+LLS ..> GPU
+Disc ..> GPU
+Phys ..> GPU
+
+IO ..> IOLib
+Cfg ..> CfgLib
+Log ..> LogLib
+
+@enduml

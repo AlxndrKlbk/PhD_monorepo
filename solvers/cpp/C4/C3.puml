@@ -1,0 +1,179 @@
+@startuml C3_Components_HydrateSimulator
+!theme plain
+left to right direction
+skinparam dpi 160
+skinparam linetype ortho
+skinparam shadowing false
+skinparam ArrowThickness 1.2
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #444
+  BackgroundColor #ffffff
+}
+skinparam componentStyle rectangle
+
+' === Внутреннее ядро симулятора ===
+package "Core Simulation" {
+  class Simulator {
+    - deckLoader: DeckLoader
+    - gridBuilder: GridBuilder
+    - disc: Discretization
+    - phys: PhysicsSystem
+    - hydr: HydrateModule
+    - nls: NonlinearSolver
+    - lls: LinearSolver
+    - time: TimeIntegrator
+    - state: State
+    - io: IOSystem
+    - cfg: Config
+    - log: Logger
+    + run(): void
+  }
+
+  class DeckLoader {
+    + loadDeck(path: string): DeckData
+  }
+
+  class GridBuilder {
+    + buildGrid(deck: DeckData): Grid
+  }
+
+  class Discretization {
+    + assembleLinearSystem(grid: Grid, state: State): LinearSystem
+  }
+
+  class PhysicsSystem {
+    + computeResidual(state: State): Residual
+    + computeJacobian(state: State): Jacobian
+  }
+
+  class State {
+    - phi[]    ' φ
+    - k[]      ' k
+    - p[]      ' давление
+    - T[]      ' температура
+    - Sh[]     ' насыщенность гидратом
+    - auxCPU   ' служебные поля
+    - gpuBuf   ' буферы для GPU
+    + syncToGpu(): void
+    + syncFromGpu(): void
+  }
+
+  class HydrateModule {
+    - model: IHydrateFormationModel
+    + update(state: State, dt: double): void
+  }
+
+  interface IHydrateFormationModel {
+    + init(cfg: Config): void
+    + updateHydrate(state: State, dt: double): void
+  }
+
+  class SimpleLangmuirModel implements IHydrateFormationModel
+  class AdvancedKineticModel implements IHydrateFormationModel
+
+  class NonlinearSolver {
+    - lls: LinearSolver
+    + solve(disc: Discretization,
+            phys: PhysicsSystem,
+            hydr: HydrateModule,
+            state: State,
+            dt: double): void
+  }
+
+  class LinearSolver {
+    - gpu: IGpuBackend
+    + solve(sys: LinearSystem): Vector
+  }
+
+  interface IGpuBackend {
+    + upload(sys: LinearSystem): void
+    + solveOnGpu(): Vector
+  }
+
+  class TimeIntegrator {
+    + step(sim: Simulator, dt: double): void
+  }
+
+  class IOSystem {
+    + writeOutput(state: State, t: double): void
+    + writeRestart(state: State, t: double): void
+    + readRestart(path: string): State
+  }
+
+  class Config {
+    + load(file: string): void
+    + getDouble(key: string): double
+    + getString(key: string): string
+  }
+
+  class Logger {
+    + info(msg: string): void
+    + warn(msg: string): void
+    + error(msg: string): void
+  }
+}
+
+' === Парсинг deck-файлов ===
+package "Deck Parsing" {
+  class EclipseDeckReader {
+    + parseDATA(path: string): DeckData
+    + parseGRDECL(path: string): DeckData
+  }
+}
+
+' === GPU / BLAS backend ===
+package "Numerics Backends" {
+  class CpuBlasBackend
+  class OpenClBackend
+  class CudaBackend
+}
+
+' === Связи ядра ===
+Simulator --> DeckLoader
+Simulator --> GridBuilder
+Simulator --> Discretization
+Simulator --> PhysicsSystem
+Simulator --> HydrateModule
+Simulator --> NonlinearSolver
+Simulator --> TimeIntegrator
+Simulator --> IOSystem
+Simulator --> Config
+Simulator --> Logger
+Simulator --> State
+
+DeckLoader --> EclipseDeckReader
+GridBuilder --> DeckData
+
+Discretization --> PhysicsSystem
+Discretization --> State
+
+PhysicsSystem --> State
+
+HydrateModule --> IHydrateFormationModel
+IHydrateFormationModel <|-- SimpleLangmuirModel
+IHydrateFormationModel <|-- AdvancedKineticModel
+HydrateModule --> State
+
+NonlinearSolver --> LinearSolver
+NonlinearSolver --> State
+NonlinearSolver --> Discretization
+NonlinearSolver --> PhysicsSystem
+NonlinearSolver --> HydrateModule
+
+TimeIntegrator --> NonlinearSolver
+TimeIntegrator --> State
+
+IOSystem --> State
+
+LinearSolver --> IGpuBackend
+IGpuBackend <|-- CpuBlasBackend
+IGpuBackend <|-- OpenClBackend
+IGpuBackend <|-- CudaBackend
+
+DeckLoader ..> EclipseDeckReader : использует OPM Parser
+LinearSolver ..> "Eigen/BLAS/LAPACK"
+LinearSolver ..> "GPU Backend\n(OpenCL/CUDA)"
+IOSystem ..> "VTK/HDF5 writer"
+
+@enduml
