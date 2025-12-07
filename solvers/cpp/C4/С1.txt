@@ -1,0 +1,43 @@
+@startuml C1_HydrateSimulator
+!theme plain
+top to bottom direction
+skinparam dpi 160
+skinparam shadowing false
+skinparam ArrowThickness 1.2
+skinparam linetype ortho
+
+skinparam rectangle {
+  RoundCorner 10
+  BorderColor #444
+  BackgroundColor #f7f7f7
+}
+
+actor "Гидродинамик" as User
+
+' --- Входные файлы ---
+database "Входные данные модели\n(.DATA, .GRDECL,\n.GRID, .INIT,\nJSON/YAML)" as InputFiles
+
+' --- Чёрный ящик ---
+rectangle "Hydrate Simulator\n(С++ расчётная модель)" as Sim <<System>>
+
+' --- Выходные файлы ---
+database "Результаты расчёта\n(VTK, HDF5, logs,\nrestart-файлы,\nпрофили добычи)" as OutputFiles
+
+' Основные связи (контекстная диаграмма, уровень C1)
+User --> InputFiles : готовит\nи редактирует deck-и
+InputFiles --> Sim : входные\nмодельные данные
+Sim --> OutputFiles : результаты\nмоделирования
+
+' Примечание о том, что происходит внутри Симулятора
+note right of Sim
+Внутри выполняется:
+  • численное решение задач фильтрации для газа и воды
+  • фазовые переходы газа и воды в газовый гидрат
+  • моделирование падения проницаемости коллектора от образования газовых гидратов
+  • расчёт температурного поля
+  • формирование профилей добычи скважин
+  • вывод полей давления, насыщений,
+    скоростей, температур
+end note
+
+@enduml
